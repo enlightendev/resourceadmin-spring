@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>[%p] %c - %m%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs\logFile.txt</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>logs\logFile.%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+
+            <!-- keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+
+        </rollingPolicy>
+
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>[%p] %c - %m%n</Pattern>
+        </encoder>
+
+    </appender>
+
+    <logger name="com.philafin.resourceadmin" level="DEBUG"/>
+
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="INFO"/>
+    <logger name="org.hibernate.type" level="WARN"/>
+    <logger name="org.hibernate.hql" level="WARN"/>
+    <logger name="org.hibernate.engine" level="WARN"/>
+    <logger name="org.hibernate.loader" level="WARN"/>
+    <logger name="org.hibernate.jpa" level="WARN"/>
+    <logger name="org.hibernate.tool" level="WARN"/>
+    <logger name="org.hibernate.cfg" level="WARN"/>
+    <logger name="org.hibernate.persister" level="WARN"/>
+    <logger name="org.hibernate.internal" level="WARN"/>
+    <logger name="org.hibernate.id" level="WARN"/>
+    <logger name="org.hibernate.validator" level="WARN"/>
+    <logger name="org.hibernate.secure" level="WARN"/>
+    <logger name="org.hibernate.boot" level="WARN"/>
+    <logger name="org.hibernate.integrator" level="WARN"/>
+
+    <logger name="org.apache" level="WARN"/>
+    <!-- -->
+
+    <logger name="org.springframework" level="OFF"/>
+    <logger name="org.springframework.web" level="OFF"/>
+    <logger name="org.springframework.data" level="OFF"/>
+    <logger name="org.springframework.security" level="OFF"/>
+    <logger name="org.springframework.cache" level="OFF"/>
+    <logger name="org.springframework.data.rest" level="OFF"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <root level="${logback.loglevel}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
