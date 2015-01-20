@@ -1,4 +1,4 @@
-package com.philafin;
+package com.philafin.resourceadmin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
