@@ -32,10 +32,10 @@
 
     </appender>
 
-    <logger name="com.philafin.resourceadmin" level="DEBUG"/>
+    <logger name="com.philafin.resourceadmin" level="INFO"/>
 
     <logger name="org.hibernate" level="WARN"/>
-    <logger name="org.hibernate.SQL" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="WARN"/>
     <logger name="org.hibernate.type" level="WARN"/>
     <logger name="org.hibernate.hql" level="WARN"/>
     <logger name="org.hibernate.engine" level="WARN"/>
@@ -54,7 +54,7 @@
     <logger name="org.apache" level="WARN"/>
     <!-- -->
 
-    <logger name="org.springframework" level="OFF"/>
+    <logger name="org.springframework" level="WARN"/>
     <logger name="org.springframework.web" level="OFF"/>
     <logger name="org.springframework.data" level="OFF"/>
     <logger name="org.springframework.security" level="OFF"/>

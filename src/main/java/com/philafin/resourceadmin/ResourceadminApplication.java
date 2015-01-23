@@ -1,13 +1,15 @@
 package com.philafin.resourceadmin;
 
+import com.philafin.resourceadmin.config.SimpleCORSFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.orm.jpa.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -30,5 +32,14 @@ public class ResourceadminApplication implements CommandLineRunner {
     @Override
     public void run(String... strings) throws Exception {
 
+    }
+
+    @Bean
+    public FilterRegistrationBean filterRegistrationBean() {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        SimpleCORSFilter simpleCORSFilter = new SimpleCORSFilter();
+        registrationBean.setFilter(simpleCORSFilter);
+        registrationBean.setOrder(1);
+        return registrationBean;
     }
 }
