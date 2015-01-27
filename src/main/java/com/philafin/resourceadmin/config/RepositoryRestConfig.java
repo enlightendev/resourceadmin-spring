@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
+import java.net.URI;
+
 /**
  * This configures the behavior of spring data rest.
  * http://projects.spring.io/spring-data-rest/
@@ -18,8 +20,12 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @Configuration
 public class RepositoryRestConfig extends RepositoryRestMvcConfiguration {
 
+    private static final String BASE_URI = "/api";
+
     @Override
     protected void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+        super.configureRepositoryRestConfiguration(config);
+        config.setBaseUri(URI.create(BASE_URI));
         config.exposeIdsFor(Employee.class, Application.class, ResourcePermission.class, Permission.class);
         config.setReturnBodyOnCreate(true);
         config.setReturnBodyOnUpdate(true);
