@@ -34,6 +34,7 @@ public class ResourceadminApplication implements CommandLineRunner {
 
     }
 
+    /*
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -42,4 +43,5 @@ public class ResourceadminApplication implements CommandLineRunner {
         registrationBean.setOrder(1);
         return registrationBean;
     }
+    */
 }

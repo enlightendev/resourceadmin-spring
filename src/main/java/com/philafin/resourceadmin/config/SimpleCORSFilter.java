@@ -2,6 +2,9 @@ package com.philafin.resourceadmin.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
@@ -11,7 +14,8 @@ import java.io.IOException;
  * https://spring.io/guides/gs/rest-service-cors/
  * http://stackoverflow.com/questions/22846309/cors-filter-not-working-as-intended
  */
-//@Component
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class SimpleCORSFilter implements Filter {
 
 

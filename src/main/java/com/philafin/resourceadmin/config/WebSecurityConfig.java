@@ -19,7 +19,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 public class WebSecurityConfig {
 
     @Configuration
-    @Order(2)
+    @Order(1)
     public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
             http
@@ -34,7 +34,7 @@ public class WebSecurityConfig {
     }
 
     @Configuration
-    @Order(1)
+    @Order(2)
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
@@ -55,13 +55,15 @@ public class WebSecurityConfig {
 
             http
                 .authorizeRequests()
-                    .antMatchers("/bak/index.html", "/home.html", "/", "/login","/api/user").permitAll()
+                    .antMatchers("/bak/index.html", "/home.html", "/", "/login", "/api/user").permitAll()
                 .anyRequest()
                     .authenticated().and() //without this no one is prompted to authenticate
                 .formLogin().permitAll().and()
-                .logout().permitAll().and()
-                .addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
-                .csrf().csrfTokenRepository(csrfTokenRepository());
+                .logout().permitAll();
+                //.and().addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class)
+                //.csrf().csrfTokenRepository(csrfTokenRepository());
+
+            http.csrf().disable();
         }
 
         private CsrfTokenRepository csrfTokenRepository() {
