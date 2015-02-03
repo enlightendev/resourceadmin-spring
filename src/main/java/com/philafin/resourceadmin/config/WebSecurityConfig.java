@@ -33,6 +33,7 @@ public class WebSecurityConfig {
         }
     }
 
+    /*
     @Configuration
     @Order(2)
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
@@ -73,4 +74,5 @@ public class WebSecurityConfig {
         }
 
     }
+    */
 }
