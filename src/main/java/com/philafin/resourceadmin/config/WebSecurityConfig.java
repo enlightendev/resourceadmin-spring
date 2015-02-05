@@ -1,8 +1,10 @@
 package com.philafin.resourceadmin.config;
 
 import com.philafin.resourceadmin.security.CsrfHeaderFilter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,9 +23,14 @@ public class WebSecurityConfig {
     @Configuration
     @Order(1)
     public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        /*
         protected void configure(HttpSecurity http) throws Exception {
             http
-                    .antMatcher("/api/**")
+
+                    .authorizeRequests()
+                    .antMatchers("/logout", "/login").permitAll()
+                    .and().antMatcher("/api/**")
                     .authorizeRequests()
                     .anyRequest().authenticated();
 
@@ -31,6 +38,7 @@ public class WebSecurityConfig {
 
             http.csrf().disable();
         }
+        */
     }
 
     /*

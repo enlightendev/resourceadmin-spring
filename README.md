@@ -1,59 +1,12 @@
 ## About
 
-Resource admin application is used to manage the security and access of our enterprise resources. This part of the
-application will mainly serve apis to be used by other front end applications, process, or devices.
-
-## Core Technology
-- java 1.8
-- spring boot
-
-## Development Process
-
-1 - initial creation was done using https://start.spring.io/
-because it is a spring boot application and we included security and web libraries spring boot
-will implement default basic http security.
-
-
-## Security
-
-Reference
-
-cors:
-
-- https://spring.io/guides/gs/rest-service-cors/
-
-http security:
-
-- see http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#multiple-httpsecurity
-
-oauth2:
-
-- https://spring.io/blog/2014/11/07/webinar-replay-security-for-microservices-with-spring-and-oauth2
-
-angular-spring:
-
-- http://spring.io/blog/2015/01/12/spring-and-angular-js-a-secure-single-page-application
-
-
-TODO:
-
-- why doesn't CORS filter get invoked for login page (or any protected resources). CORS filter is only invoked after you have logged in.
-
-
-
-
-############################################
-#ABOUT
-Reference application used to manage user accounts and application access.
-
-#SETUP
-
+Resource admin application is used to manage the security and access of our enterprise
+resources. This part of the application will mainly serve apis to be used by other
+front end applications, process, or devices.
 
 #TECHNOLOGY STACK
-The following sections discuss the technology stack behind the application and any particular setup/configuration details.
-
-
-
+The following sections discuss the technology stack behind the application and any particular
+setup/configuration details.
 
 ###SPRING BOOT
 
@@ -61,15 +14,13 @@ Spring boot is used to greatly simplify the application configuration and develo
 
 ### JAVA CONFIG
 
-All java based configuration takes place in the config package. Classes in this package are annotated with
-@Configuration so that the container picks these classes up and uses them to configure the appropriate application
-behavior.
-
-
+All java based configuration takes place in the config package. Classes in this package are
+annotated with @Configuration so that the container picks these classes up and uses them to
+configure the appropriate application behavior.
 
 ###APPLICATION PROPERTIES
-Spring boot will configure much of the runtime characteristics if it finds an application.properties file in the
-classpath.
+Spring boot will configure much of the runtime characteristics if it finds an
+application.properties file in the classpath.
 
 
 ### SPRING DATA REST
@@ -91,20 +42,33 @@ by tagging our repository class with @RepositoryRestResource
 
 ### DATABASE INIT
 
-spring boot will create schema and load data if we include schema.sql and data.sql in resources folder and set up the
-correct database properties in application.properties.
+spring boot will create schema and load data if we include schema.sql and data.sql in
+resources folder and set up the correct database properties in application.properties.
 
 NOTE for oracle: add oracle drivers to local maven
 
 mvn install:install-file -DgroupId=com.oracle -DartifactId=ojdbc6 -Dversion=11.2.0.1.0 -Dpackaging=jar -Dfile=ojdbc6.jar -DgeneratePom=true
 
+
+## Development Process
+
+1 - initial creation was done using https://start.spring.io/
+because it is a spring boot application and we included security and web libraries spring boot
+will implement default basic http security.
+
+
 ### SPRING SECURITY
 
-##### DEFAULT CONFIG
+because this is mainly an api server we use spring oauth to protect endpoints
 
-With Spring boot, if spring security is on the classpath then web applications will be secure by default with
-‘basic’ authentication on all HTTP endpoints.  Spring security is applied by adding 'spring-boot-starter-security'
-as a dependency.
+Process: client applications may be web based, mobile, or command line processes (e.g. curl).
+
+##### DEFAULT CONFIG
+- depracted
+
+With Spring boot, if spring security is on the classpath then web applications will be secure
+by default with ‘basic’ authentication on all HTTP endpoints.  Spring security is applied by
+adding 'spring-boot-starter-security' as a dependency.
 
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -115,8 +79,8 @@ this default configuration provides an in memory username/password and some othe
 
 ##### OVERRIDING DEFAULTS
 
-We override default configuration by extending WebSecurityConfigurerAdapter and implementing the appropriate methods in
-addition to annotating our config class with the following annotations.
+We override default configuration by extending WebSecurityConfigurerAdapter and implementing the
+appropriate methods in addition to annotating our config class with the following annotations.
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebMvcSecurity
@@ -132,20 +96,6 @@ Also configured in WebSecurityConfig by overriding
 
 We define the queries and tables containing authentication/authorization info by extending JdbcDaoImpl.
 see ApplicationUserDetailsManager
-
-
-##### AUTHENTICATION
-NOTE: there are 2 methods:
-- a custom login form provided by spring mvc configuration
-
-    http://docs.spring.io/autorepo/docs/spring-security/3.2.x/guides/
-    http://docs.spring.io/autorepo/docs/spring-security/3.2.x/guides/hellomvc.html
-    http://docs.spring.io/autorepo/docs/spring-security/3.2.x/guides/form.html
-
-- angular based where we make api calls and store in angular.
-
-    see links in angular section
-
 
 ##### PASSWORD ENCODING
 
@@ -169,9 +119,53 @@ http://docs.spring.io/spring-data/rest/docs/2.2.0.RELEASE/reference/html/#events
 https://github.com/spring-projects/spring-data-rest/wiki/Handling-ApplicationEvents-in-the-REST-Exporter
 
 
-##### Spring oauth
 
-http://blog.techdev.de/using-spring-oauth-in-trackr/
+#### Reference
+
+CORS:
+deprecated - not a concern now that we use oauth.
+
+- https://spring.io/guides/gs/rest-service-cors/
+
+http security:
+- see http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#multiple-httpsecurity
+
+oauth2:
+
+- https://spring.io/blog/2014/11/07/webinar-replay-security-for-microservices-with-spring-and-oauth2
+- https://github.com/dsyer/sparklr-boot
+
+angular-spring:
+
+- http://spring.io/blog/2015/01/12/spring-and-angular-js-a-secure-single-page-application
+
+
+TODO:
+
+- why doesn't CORS filter get invoked for login page (or any protected resources).
+  CORS filter is only invoked after you have logged in. (FIXED by applying the following:
+
+  `
+      @Component
+      @Order(Ordered.HIGHEST_PRECEDENCE)
+  `
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### ANGULAR
 
@@ -213,6 +207,12 @@ actuator added end points
 curl is a command line utility that allows you to make http requests to rest endpoints (among other things). Here are
 notes on using curl for CRUD operations.
 
+#### oAuth
+
+curl -X POST -vu clientapp:123456 http://localhost:9191/oauth/token -H "Accept: application/json" -d "password=password&username=user&grant_type=password&scope=read%20write&client_secret=123456&client_id=clientapp"
+
+
+
 #### Create
 
 employees - embedded post data
@@ -233,7 +233,8 @@ resource permissions - reference a file with post data.
 
 list all employees:
 
-`curl http://localhost:8080/employees`
+w/o oauth -> `curl http://localhost:8080/employees`
+w oauth ---> `curl -H "Authorization: Bearer [token from oauth token request]" http://localhost:8080/employees`
 
 #### Update
 
