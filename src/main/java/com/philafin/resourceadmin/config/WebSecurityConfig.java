@@ -1,11 +1,20 @@
 package com.philafin.resourceadmin.config;
 
+import com.auth0.spring.security.auth0.Auth0AuthenticationEntryPoint;
+import com.auth0.spring.security.auth0.Auth0AuthenticationFilter;
+import com.auth0.spring.security.auth0.Auth0AuthenticationProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
@@ -25,65 +34,53 @@ import java.io.IOException;
  * reference: https://spring.io/blog/2015/01/12/the-login-page-angular-js-and-spring-security-part-ii
  */
 @Configuration
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+@EnableWebSecurity(debug = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-                //completely ignore urls starting with the following paths
-                .antMatchers("/bower_components/**")
-                .antMatchers("/scripts/**")
-                .antMatchers("/styles/**")
-                .antMatchers("/components/**")
-                .antMatchers("/assets/**")
-                .antMatchers("/app/**")
-                .antMatchers("/fonts/**");
+    /**/
+    @Autowired
+    Environment env;
+
+    @Bean(name="auth0EntryPoint")
+    public Auth0AuthenticationEntryPoint auth0AuthenticationEntryPoint() {
+        return new Auth0AuthenticationEntryPoint();
+    }
+
+    @Bean(name = "auth0Filter")
+    public Auth0AuthenticationFilter auth0AuthenticationFilter(Auth0AuthenticationEntryPoint entryPoint) {
+        Auth0AuthenticationFilter filter = new Auth0AuthenticationFilter();
+        filter.setEntryPoint(entryPoint);
+        return filter;
+    }
+
+    @Bean(name = "auth0AuthenticationProvider")
+    public Auth0AuthenticationProvider auth0AuthenticationProvider(){
+        Auth0AuthenticationProvider provider = new Auth0AuthenticationProvider();
+        provider.setClientSecret(env.getRequiredProperty("auth0.clientSecret"));
+        provider.setClientId(env.getRequiredProperty("auth0.clientId"));
+        provider.setSecuredRoute(env.getRequiredProperty("auth0.securedRoute"));
+        return provider;
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(auth0AuthenticationProvider());
+    }
+
+    @Bean
+    SimpleCORSFilter simpleCORSFilter() {
+        return new SimpleCORSFilter();
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
+                .csrf().disable()
+                .addFilterAfter(auth0AuthenticationFilter(auth0AuthenticationEntryPoint()), SecurityContextPersistenceFilter.class)
+                .addFilterBefore(simpleCORSFilter(), Auth0AuthenticationFilter.class)
+                .antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("index.html", "/home.html", "/", "/login", "/api/user").permitAll()
-                .anyRequest()
-                .authenticated().and() //without this no one is prompted to authenticate
-                .formLogin()
-                .permitAll().and()
-                .logout()
-                .permitAll();
-
-        //http.addFilterAfter(csrfHeaderFilter(), CsrfFilter.class).csrf().csrfTokenRepository(csrfTokenRepository());
-        http.csrf().disable();
+                .antMatchers(env.getRequiredProperty("auth0.securedRoute")).authenticated();
     }
 
-    private Filter csrfHeaderFilter() {
-
-        return new OncePerRequestFilter() {
-            @Override
-            protected void doFilterInternal(HttpServletRequest request,
-                                            HttpServletResponse response, FilterChain filterChain)
-                    throws ServletException, IOException {
-                CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-                if (csrf != null) {
-                    Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
-                    String token = csrf.getToken();
-                    if (cookie == null || token != null
-                            && !token.equals(cookie.getValue())) {
-                        cookie = new Cookie("XSRF-TOKEN", token);
-                        cookie.setPath("/");
-                        response.addCookie(cookie);
-                    }
-                }
-                filterChain.doFilter(request, response);
-            }
-        };
-    }
-
-    private CsrfTokenRepository csrfTokenRepository() {
-        HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-        repository.setHeaderName("X-XSRF-TOKEN");
-        return repository;
-    }
 }
